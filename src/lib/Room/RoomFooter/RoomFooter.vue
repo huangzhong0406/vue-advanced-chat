@@ -1,62 +1,33 @@
 <template>
-	<div
-		v-show="Object.keys(room).length && showFooter"
-		id="room-footer"
-		class="vac-room-footer"
-		:class="{
-			'vac-app-box-shadow': shadowFooter
-		}"
-	>
-		<room-emojis
-			:filtered-emojis="filteredEmojis"
-			:select-item="selectEmojiItem"
-			:active-up-or-down="activeUpOrDownEmojis"
-			@select-emoji="selectEmoji($event)"
-			@activate-item="activeUpOrDownEmojis = 0"
-		/>
+	<div v-show="Object.keys(room).length && showFooter" id="room-footer" class="vac-room-footer" :class="{
+		'vac-app-box-shadow': shadowFooter
+	}">
+		<room-emojis :filtered-emojis="filteredEmojis" :select-item="selectEmojiItem"
+			:active-up-or-down="activeUpOrDownEmojis" @select-emoji="selectEmoji($event)"
+			@activate-item="activeUpOrDownEmojis = 0" />
 
-		<room-users-tag
-			:filtered-users-tag="filteredUsersTag"
-			:select-item="selectUsersTagItem"
-			:active-up-or-down="activeUpOrDownUsersTag"
-			@select-user-tag="selectUserTag($event)"
-			@activate-item="activeUpOrDownUsersTag = 0"
-		/>
+		<room-users-tag :filtered-users-tag="filteredUsersTag" :select-item="selectUsersTagItem"
+			:active-up-or-down="activeUpOrDownUsersTag" @select-user-tag="selectUserTag($event)"
+			@activate-item="activeUpOrDownUsersTag = 0" />
 
-		<room-templates-text
-			:filtered-templates-text="filteredTemplatesText"
-			:select-item="selectTemplatesTextItem"
-			:active-up-or-down="activeUpOrDownTemplatesText"
-			@select-template-text="selectTemplateText($event)"
-			@activate-item="activeUpOrDownTemplatesText = 0"
-		/>
+		<room-templates-text :filtered-templates-text="filteredTemplatesText" :select-item="selectTemplatesTextItem"
+			:active-up-or-down="activeUpOrDownTemplatesText" @select-template-text="selectTemplateText($event)"
+			@activate-item="activeUpOrDownTemplatesText = 0" />
 
-		<room-message-reply
-			:room="room"
-			:message-reply="messageReply"
-			:text-formatting="textFormatting"
-			:link-options="linkOptions"
-			@reset-message="resetMessage"
-		>
+		<room-message-reply :room="room" :message-reply="messageReply" :text-formatting="textFormatting"
+			:link-options="linkOptions" @reset-message="resetMessage">
 			<template v-for="(i, name) in $slots" #[name]="data">
 				<slot :name="name" v-bind="data" />
 			</template>
 		</room-message-reply>
 
-		<room-files
-			:files="files"
-			@remove-file="removeFile"
-			@reset-message="resetMessage"
-		>
+		<room-files :files="files" @remove-file="removeFile" @reset-message="resetMessage">
 			<template v-for="(i, name) in $slots" #[name]="data">
 				<slot :name="name" v-bind="data" />
 			</template>
 		</room-files>
 
-		<div
-			class="vac-box-footer"
-			:class="{ 'vac-box-footer-border': !files.length }"
-		>
+		<div class="vac-box-footer" :class="{ 'vac-box-footer-border': !files.length }">
 			<div v-if="showAudio && !files.length" class="vac-icon-textarea-left">
 				<template v-if="isRecording">
 					<div class="vac-svg-button vac-icon-audio-stop" @click="stopRecorder">
@@ -71,10 +42,7 @@
 						{{ recordedTime }}
 					</div>
 
-					<div
-						class="vac-svg-button vac-icon-audio-confirm"
-						@click="toggleRecorder(false)"
-					>
+					<div class="vac-svg-button vac-icon-audio-confirm" @click="toggleRecorder(false)">
 						<slot name="audio-check-icon">
 							<svg-icon name="checkmark" />
 						</slot>
@@ -88,52 +56,27 @@
 				</div>
 			</div>
 
-			<textarea
-				id="roomTextarea"
-				ref="roomTextarea"
-				:placeholder="textMessages.TYPE_MESSAGE"
-				class="vac-textarea"
+			<textarea id="roomTextarea" ref="roomTextarea" :placeholder="textMessages.TYPE_MESSAGE" class="vac-textarea"
 				:class="{
-					'vac-textarea-outline': editedMessage._id
-				}"
-				:style="{
-					'min-height': `20px`,
-					'padding-left': `12px`
-				}"
-				@input="onChangeInput"
-				@keydown.esc="escapeTextarea"
-				@keydown.enter.exact.prevent="selectItem"
-				@paste="onPasteImage"
-				@keydown.tab.exact.prevent=""
-				@keydown.tab="selectItem"
-				@keydown.up="updateActiveUpOrDown($event, -1)"
-				@keydown.down="updateActiveUpOrDown($event, 1)"
-			/>
+						'vac-textarea-outline': editedMessage._id
+					}" :style="{
+			'min-height': `20px`,
+			'padding-left': `12px`
+		}" @input="onChangeInput" @keydown.esc="escapeTextarea" @keydown.enter.exact.prevent="selectItem"
+				@paste="onPasteImage" @keydown.tab.exact.prevent="" @keydown.tab="selectItem"
+				@keydown.up="updateActiveUpOrDown($event, -1)" @keydown.down="updateActiveUpOrDown($event, 1)" />
 
 			<div class="vac-icon-textarea">
-				<div
-					v-if="editedMessage._id"
-					class="vac-svg-button"
-					@click="resetMessage"
-				>
+				<div v-if="editedMessage._id" class="vac-svg-button" @click="resetMessage">
 					<slot name="edit-close-icon">
 						<svg-icon name="close-outline" />
 					</slot>
 				</div>
 
 				<div v-if="showEmojis" v-click-outside="() => (emojiOpened = false)">
-					<slot
-						name="emoji-picker"
-						v-bind="{ emojiOpened }"
-						:add-emoji="addEmoji"
-					>
-						<emoji-picker-container
-							:emoji-opened="emojiOpened"
-							:position-top="true"
-							:emoji-data-source="emojiDataSource"
-							@add-emoji="addEmoji"
-							@open-emoji="emojiOpened = $event"
-						>
+					<slot name="emoji-picker" v-bind="{ emojiOpened }" :add-emoji="addEmoji">
+						<emoji-picker-container :emoji-opened="emojiOpened" :position-top="true"
+							:emoji-data-source="emojiDataSource" @add-emoji="addEmoji" @open-emoji="emojiOpened = $event">
 							<template #emoji-picker-icon>
 								<slot name="emoji-picker-icon" />
 							</template>
@@ -147,38 +90,19 @@
 					</slot>
 				</div>
 
-				<div
-					v-if="textareaActionEnabled"
-					class="vac-svg-button"
-					@click="textareaActionHandler"
-				>
+				<div v-if="textareaActionEnabled" class="vac-svg-button" @click="textareaActionHandler">
 					<slot name="custom-action-icon">
 						<svg-icon name="deleted" />
 					</slot>
 				</div>
 
-				<input
-					v-if="showFiles"
-					ref="file"
-					type="file"
-					multiple
-					:accept="acceptedFiles"
-					:capture="captureFiles"
-					style="display: none"
-					@change="onFileChange($event.target.files)"
-				/>
+				<input v-if="showFiles" ref="file" type="file" multiple :accept="acceptedFiles" :capture="captureFiles"
+					style="display: none" @change="onFileChange($event.target.files)" />
 
-				<div
-					v-if="showSendIcon"
-					class="vac-svg-button"
-					:class="{ 'vac-send-disabled': isMessageEmpty }"
-					@click="sendMessage"
-				>
+				<div v-if="showSendIcon" class="vac-svg-button" :class="{ 'vac-send-disabled': isMessageEmpty }"
+					@click="sendMessage">
 					<slot name="send-icon">
-						<svg-icon
-							name="send"
-							:param="isMessageEmpty || isFileLoading ? 'disabled' : ''"
-						/>
+						<svg-icon name="send" :param="isMessageEmpty || isFileLoading ? 'disabled' : ''" />
 					</slot>
 				</div>
 			</div>
@@ -316,6 +240,9 @@ export default {
 		},
 		message(val) {
 			this.getTextareaRef().value = val
+			setTimeout(() => {
+				this.onChangeInput()
+			})
 		},
 		roomMessage: {
 			immediate: true,

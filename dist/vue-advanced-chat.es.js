@@ -26509,6 +26509,7 @@ const _sfc_main$a = {
     showEmojis: { type: Boolean, required: true },
     showFooter: { type: Boolean, required: true },
     acceptedFiles: { type: String, required: true },
+    captureFiles: { type: String, required: true },
     textareaActionEnabled: { type: Boolean, required: true },
     textareaAutoFocus: { type: Boolean, required: true },
     userTagsEnabled: { type: Boolean, required: true },
@@ -26578,6 +26579,14 @@ const _sfc_main$a = {
     },
     message(val) {
       this.getTextareaRef().value = val;
+      setTimeout(() => {
+        const el = this.getTextareaRef();
+        if (!el)
+          return;
+        const padding = window.getComputedStyle(el, null).getPropertyValue("padding-top").replace("px", "");
+        el.style.height = 0;
+        el.style.height = el.scrollHeight - padding * 2 + "px";
+      });
     },
     roomMessage: {
       immediate: true,
@@ -27024,7 +27033,7 @@ const _hoisted_3$8 = { class: "vac-dot-audio-record-time" };
 const _hoisted_4$8 = ["placeholder"];
 const _hoisted_5$6 = { class: "vac-icon-textarea" };
 const _hoisted_6$3 = { key: 1 };
-const _hoisted_7$3 = ["accept"];
+const _hoisted_7$3 = ["accept", "capture"];
 function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_room_emojis = resolveComponent("room-emojis");
   const _component_room_users_tag = resolveComponent("room-users-tag");
@@ -27202,6 +27211,7 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
           type: "file",
           multiple: "",
           accept: $props.acceptedFiles,
+          capture: $props.captureFiles,
           style: { "display": "none" },
           onChange: _cache[21] || (_cache[21] = ($event) => $options.onFileChange($event.target.files))
         }, null, 40, _hoisted_7$3)) : createCommentVNode("", true),
@@ -28432,6 +28442,7 @@ const _sfc_main$2 = {
     showNewMessagesDivider: { type: Boolean, required: true },
     showFooter: { type: Boolean, required: true },
     acceptedFiles: { type: String, required: true },
+    captureFiles: { type: String, required: true },
     textFormatting: { type: Object, required: true },
     linkOptions: { type: Object, required: true },
     loadingRooms: { type: Boolean, required: true },
@@ -28635,7 +28646,11 @@ const _sfc_main$2 = {
         return;
       const autoScrollOffset = ref.offsetHeight + 60;
       setTimeout(() => {
-        const scrolledUp = this.getBottomScroll(this.$refs.scrollContainer) > autoScrollOffset;
+        const scrollContainer = this.$refs.scrollContainer;
+        let scrolledUp = false;
+        if (scrollContainer) {
+          scrolledUp = this.getBottomScroll(scrollContainer) > autoScrollOffset;
+        }
         if (message.senderId === this.currentUserId) {
           if (scrolledUp) {
             if (this.autoScroll.send.newAfterScrollUp) {
@@ -28733,9 +28748,11 @@ const _sfc_main$2 = {
     scrollToBottom() {
       setTimeout(() => {
         const element2 = this.$refs.scrollContainer;
-        element2.classList.add("vac-scroll-smooth");
-        element2.scrollTo({ top: element2.scrollHeight, behavior: "smooth" });
-        setTimeout(() => element2.classList.remove("vac-scroll-smooth"));
+        if (element2) {
+          element2.classList.add("vac-scroll-smooth");
+          element2.scrollTo({ top: element2.scrollHeight, behavior: "smooth" });
+          setTimeout(() => element2.classList.remove("vac-scroll-smooth"));
+        }
       }, 50);
     },
     openFile({ message, file }) {
@@ -28961,6 +28978,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       "show-emojis": $props.showEmojis,
       "show-footer": $props.showFooter,
       "accepted-files": $props.acceptedFiles,
+      "capture-files": $props.captureFiles,
       "textarea-action-enabled": $props.textareaActionEnabled,
       "textarea-auto-focus": $props.textareaAutoFocus,
       "user-tags-enabled": $props.userTagsEnabled,
@@ -28988,7 +29006,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           ])
         };
       })
-    ]), 1032, ["room", "room-id", "room-message", "text-messages", "show-send-icon", "show-files", "show-audio", "show-emojis", "show-footer", "accepted-files", "textarea-action-enabled", "textarea-auto-focus", "user-tags-enabled", "emojis-suggestion-enabled", "templates-text", "text-formatting", "link-options", "audio-bit-rate", "audio-sample-rate", "init-reply-message", "init-edit-message", "dropped-files", "emoji-data-source"])
+    ]), 1032, ["room", "room-id", "room-message", "text-messages", "show-send-icon", "show-files", "show-audio", "show-emojis", "show-footer", "accepted-files", "capture-files", "textarea-action-enabled", "textarea-auto-focus", "user-tags-enabled", "emojis-suggestion-enabled", "templates-text", "text-formatting", "link-options", "audio-bit-rate", "audio-sample-rate", "init-reply-message", "init-edit-message", "dropped-files", "emoji-data-source"])
   ], 544)), [
     [vShow, $props.isMobile && !$props.showRoomsList || !$props.isMobile || $props.singleRoom]
   ]);
@@ -29570,6 +29588,7 @@ const _sfc_main = {
     roomMessage: { type: String, default: "" },
     scrollDistance: { type: Number, default: 60 },
     acceptedFiles: { type: String, default: "*" },
+    captureFiles: { type: String, default: "" },
     templatesText: { type: [Array, String], default: () => [] },
     mediaPreviewEnabled: { type: [Boolean, String], default: true },
     usernameOptions: {
@@ -29992,6 +30011,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         "emojis-suggestion-enabled": $options.emojisSuggestionEnabledCasted,
         "scroll-distance": $props.scrollDistance,
         "accepted-files": $props.acceptedFiles,
+        "capture-files": $props.captureFiles,
         "templates-text": $options.templatesTextCasted,
         "username-options": $options.usernameOptionsCasted,
         "emoji-data-source": $props.emojiDataSource,
@@ -30019,7 +30039,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           };
         })
-      ]), 1032, ["current-user-id", "rooms", "room-id", "load-first-room", "messages", "room-message", "messages-loaded", "menu-actions", "message-actions", "message-selection-actions", "auto-scroll", "show-send-icon", "show-files", "show-audio", "audio-bit-rate", "audio-sample-rate", "show-emojis", "show-reaction-emojis", "show-new-messages-divider", "show-footer", "text-messages", "single-room", "show-rooms-list", "text-formatting", "link-options", "is-mobile", "loading-rooms", "room-info-enabled", "textarea-action-enabled", "textarea-auto-focus", "user-tags-enabled", "emojis-suggestion-enabled", "scroll-distance", "accepted-files", "templates-text", "username-options", "emoji-data-source", "onToggleRoomsList", "onRoomInfo", "onFetchMessages", "onSendMessage", "onEditMessage", "onDeleteMessage", "onOpenFile", "onOpenUserTag", "onOpenFailedMessage", "onMenuActionHandler", "onMessageActionHandler", "onMessageSelectionActionHandler", "onSendMessageReaction", "onTypingMessage", "onTextareaActionHandler"])
+      ]), 1032, ["current-user-id", "rooms", "room-id", "load-first-room", "messages", "room-message", "messages-loaded", "menu-actions", "message-actions", "message-selection-actions", "auto-scroll", "show-send-icon", "show-files", "show-audio", "audio-bit-rate", "audio-sample-rate", "show-emojis", "show-reaction-emojis", "show-new-messages-divider", "show-footer", "text-messages", "single-room", "show-rooms-list", "text-formatting", "link-options", "is-mobile", "loading-rooms", "room-info-enabled", "textarea-action-enabled", "textarea-auto-focus", "user-tags-enabled", "emojis-suggestion-enabled", "scroll-distance", "accepted-files", "capture-files", "templates-text", "username-options", "emoji-data-source", "onToggleRoomsList", "onRoomInfo", "onFetchMessages", "onSendMessage", "onEditMessage", "onDeleteMessage", "onOpenFile", "onOpenUserTag", "onOpenFailedMessage", "onMenuActionHandler", "onMessageActionHandler", "onMessageSelectionActionHandler", "onSendMessageReaction", "onTypingMessage", "onTextareaActionHandler"])
     ]),
     createVNode(Transition, {
       name: "vac-fade-preview",

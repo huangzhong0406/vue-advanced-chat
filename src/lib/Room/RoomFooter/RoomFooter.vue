@@ -316,6 +316,16 @@ export default {
 		},
 		message(val) {
 			this.getTextareaRef().value = val
+			setTimeout(() => {
+				const el = this.getTextareaRef()
+				if (!el) return
+				const padding = window
+					.getComputedStyle(el, null)
+					.getPropertyValue('padding-top')
+					.replace('px', '')
+				el.style.height = 0
+				el.style.height = el.scrollHeight - padding * 2 + 'px'
+			})
 		},
 		roomMessage: {
 			immediate: true,
